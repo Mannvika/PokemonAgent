@@ -4,6 +4,13 @@ import scrapy
 class PokemonCrawler(scrapy.Spider):
     name = 'pokemon'
 
+    custom_settings = {
+        'AUTOTHROTTLE_ENABLED': True,
+        'AUTOTHROTTLE_START_DELAY': 5,
+        'DOWNLOAD_DELAY': 2,
+        'CONCURRENT_REQUESTS_PER_DOMAIN': 1, 
+    }
+
     start_urls = [
         'https://bulbapedia.bulbagarden.net/wiki/List_of_cities_and_towns',
     ]
