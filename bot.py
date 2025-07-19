@@ -78,4 +78,4 @@ intents=discord.Intents.default()
 intents.message_content = True
 
 client = DiscordClient(intents=intents)
-client.run('')
+client.run('test')
