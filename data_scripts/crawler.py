@@ -12,12 +12,13 @@ class PokemonCrawler(scrapy.Spider):
     }
 
     start_urls = [
-        'https://bulbapedia.bulbagarden.net/wiki/List_of_cities_and_towns',
+        #'https://bulbapedia.bulbagarden.net/wiki/List_of_cities_and_towns',
+        'https://bulbapedia.bulbagarden.net/wiki/List_of_game_characters',
     ]
         
     def parse(self, response):
         print(f"Parsing URL: {response.url}")
-        for url in response.css('table.sortable td:first-child a::attr(href)').getall():
+        for url in response.css('table a::attr(href)').getall():
             print(f"Found URL: {url}")
             if url.startswith('/wiki/') and not url.startswith('/wiki/File:'):
                 print(f"Following URL: {url}")

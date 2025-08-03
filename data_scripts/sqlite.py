@@ -1,11 +1,12 @@
 import sqlite3
 import json
 
-connection = sqlite3.connect('pokemon.db')
+connection = sqlite3.connect('../pokemon.db')
 
 cursor = connection.cursor()
 
 # sql = 'create table if not exists towns (name text primary key, lore text)'
+sql = 'create table if not exists trainers (name text primary key, lore text)'
 
 with open('lore.json', 'r') as file:
     lore_data = json.load(file)

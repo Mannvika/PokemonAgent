@@ -1,7 +1,7 @@
 import chromadb
 import sqlite3
 
-with sqlite3.connect('pokemon.db') as connection:
+with sqlite3.connect('../pokemon.db') as connection:
     cursor = connection.cursor()
     cursor.execute('SELECT name, lore FROM towns')
     towns = cursor.fetchall()
