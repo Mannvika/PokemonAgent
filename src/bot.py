@@ -36,18 +36,20 @@ class DiscordClient(discord.Client):
 
         result = collection.query(
             query_embeddings=[query_embedding.tolist()],
-            n_results=50
+            n_results=10
         )
 
-        prompt = f"""You are a helpful assistant that answers questions about Pokémon towns.
+        context_text = "\n\n".join(result['documents'][0])
+
+        prompt = f"""You are a helpful assistant that answers questions about Pokémon lore information.
         You will be given a question and context from a database. Provide an answer based ONLY on the provided context.
+
+        Context: 
+        {context_text}
+        
 
         Question: {question}
         """
-
-        prompt += "\nContext:\n"
-        for i, document in enumerate(result['documents'][0]):
-            prompt += f"{i + 1}. {document}\n"
 
         url = "http://localhost:11434/api/generate"
         headers = {
@@ -78,4 +80,4 @@ intents=discord.Intents.default()
 intents.message_content = True
 
 client = DiscordClient(intents=intents)
-client.run('test')
+client.run('')
