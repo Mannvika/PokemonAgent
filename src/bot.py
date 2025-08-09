@@ -1,9 +1,8 @@
 import sentence_transformers as st
 import chromadb
-import requests
-import json
+import asyncio
 from langchain_community.llms import Ollama
-from langchain.agents import AgentExecutor, create_react_agent
+from langchain.agents import AgentExecutor, create_json_chat_agent
 from langchain_core.tools import tool
 from langchain import hub
 import discord
@@ -48,7 +47,10 @@ class DiscordClient(discord.Client):
             await message.channel.send(f'You asked: {question}\n Thinking...')
 
             try:
-                result = self.agent_executor.invoke({"input": question})
+                def run_blocking_agent():
+                    return self.agent_executor.invoke({"input": question})
+
+                result = await asyncio.to_thread(run_blocking_agent)
                 answer = result.get('output', 'No answer found.')
             except Exception as e:
                 print(f"Error processing question: {str(e)}")
@@ -58,23 +60,23 @@ class DiscordClient(discord.Client):
 
 def setup_agent():
     tools = [search_database]
-    prompt = hub.pull("hwchase17/react")
-    llm = Ollama(model="llama3:8b")
+    prompt = hub.pull("hwchase17/react-chat-json")
+    llm = Ollama(
+        model="llama3:8b",
+        temperature=0.2,
+    )
 
-    agent = create_react_agent(llm, tools, prompt=prompt)
+    agent = create_json_chat_agent(llm, tools, prompt=prompt)
     agent_executor = AgentExecutor(agent=agent, tools=tools, handle_parsing_errors=True, verbose=True)
     return agent_executor
 
 if __name__ == '__main__':
-    # Initialize the agent
     pokemon_agent_executor = setup_agent()
-    
-    # Set up Discord intents
     intents = discord.Intents.default()
-    intents.message_content = True
-    
-    # Create and run the Discord client, passing the agent in
+    intents.message_content = True    
     client = DiscordClient(agent_executor=pokemon_agent_executor, intents=intents)
     
-    # You must replace this with your actual bot token
-    client.run('')
+    with open("api", "r") as file:
+        key = file.read().strip()
+
+    client.run(key)
